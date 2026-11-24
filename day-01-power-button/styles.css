@@ -36,6 +36,8 @@ body {
   --size: clamp(260px, 42vmin, 360px);
   --shadow-depth: 1;
   --press: 0;
+  --press-ms: 140ms;
+  --release-ms: 300ms;
 
   position: relative;
   width: var(--size);
@@ -236,12 +238,21 @@ body {
       rgba(0, 0, 0, calc(var(--press) * 0.45));
   filter: brightness(calc(1 - var(--press) * 0.075));
   transition:
-    transform 0.22s cubic-bezier(0.22, 0.88, 0.32, 1.03),
-    box-shadow 0.22s ease,
-    filter 0.22s ease,
-    background 0.22s ease;
+    transform var(--release-ms) cubic-bezier(0.22, 0.88, 0.32, 1.03),
+    box-shadow var(--release-ms) ease,
+    filter var(--release-ms) ease,
+    background var(--release-ms) ease;
   will-change: transform;
   overflow: hidden;
+}
+
+/* Actuation is quicker than the sprung return, like a real switch */
+.power-btn.is-pressing .cap {
+  transition:
+    transform var(--press-ms) cubic-bezier(0.3, 0.7, 0.4, 1),
+    box-shadow var(--press-ms) ease,
+    filter var(--press-ms) ease,
+    background var(--press-ms) ease;
 }
 
 /* Continuous bead-blasted anodized aluminum texture spanning both the chamfer and flat face */

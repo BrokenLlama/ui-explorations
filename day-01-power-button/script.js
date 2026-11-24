@@ -70,6 +70,24 @@ if (Number.isFinite(sizeParam) && sizeParam > 0) {
 
 let isOn = false;
 let isPressing = false;
+let pressedAt = 0;
+let releaseTimer = null;
+
+/* Full travel time, read from the component so JS and CSS never drift apart */
+function travelMs() {
+  const raw = getComputedStyle(hero).getPropertyValue("--press-ms").trim();
+  const value = parseFloat(raw);
+  if (!Number.isFinite(value)) return 140;
+  return raw.endsWith("ms") ? value : value * 1000;
+}
+
+/* Latch happens at the bottom of the travel, never on release */
+function latch() {
+  releaseTimer = null;
+  isPressing = false;
+  isOn = !isOn;
+  paint();
+}
 
 function paint() {
   const state = isPressing ? "depress" : isOn ? "on" : "off";
@@ -79,16 +97,37 @@ function paint() {
 }
 
 function press() {
+  if (releaseTimer !== null) {
+    clearTimeout(releaseTimer);
+    latch();
+  }
   if (isPressing) return;
   isPressing = true;
+  pressedAt = performance.now();
   paint();
 }
 
 function release(commit) {
   if (!isPressing) return;
-  isPressing = false;
-  if (commit) isOn = !isOn;
-  paint();
+
+  if (!commit) {
+    clearTimeout(releaseTimer);
+    releaseTimer = null;
+    isPressing = false;
+    paint();
+    return;
+  }
+
+  const remaining = Math.max(0, travelMs() - (performance.now() - pressedAt));
+  clearTimeout(releaseTimer);
+
+  if (remaining === 0) {
+    latch();
+    return;
+  }
+
+  /* Keep the cap fully depressed until it bottoms out, then latch and spring back */
+  releaseTimer = setTimeout(latch, remaining);
 }
 
 function isInside(e) {
