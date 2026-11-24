@@ -23,6 +23,11 @@ html.embed {
   background: transparent;
 }
 
+/* ...and scale the component to the cell instead of a fixed pixel size */
+html.embed .power-btn {
+  --size: min(72vmin, 340px);
+}
+
 body {
   display: grid;
   place-items: center;
