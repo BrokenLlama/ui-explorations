@@ -1,0 +1,412 @@
+:root {
+  --grain-url: none;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  display: grid;
+  place-items: center;
+  background:
+    radial-gradient(120% 110% at 62% 8%, #33373e 0%, #22252a 34%, #15171a 68%, #0a0b0c 100%);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ---------- metallic raised power button ---------- */
+
+.power-btn {
+  --size: clamp(260px, 42vmin, 360px);
+  --shadow-depth: 1;
+  --press: 0;
+
+  position: relative;
+  width: var(--size);
+  height: var(--size);
+  border-radius: 50%;
+  cursor: pointer;
+  outline: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+.power-btn:focus,
+.power-btn:focus-visible {
+  outline: none;
+  box-shadow: none;
+}
+
+/* Atmospheric light spill behind the button on the dark backdrop */
+.power-btn::before {
+  content: "";
+  position: absolute;
+  inset: -9%;
+  z-index: -2;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 66% 30%,
+    rgba(255, 255, 255, 0.09) 0%,
+    rgba(255, 255, 255, 0.04) 34%,
+    rgba(255, 255, 255, 0) 62%
+  );
+  filter: blur(calc(var(--size) * 0.045));
+  pointer-events: none;
+}
+
+/* Contact shadow grounding the button against the dark backdrop */
+.power-btn::after {
+  content: "";
+  position: absolute;
+  left: 3%;
+  right: 3%;
+  bottom: -5%;
+  z-index: -1;
+  height: 18%;
+  border-radius: 50%;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(0, 0, 0, 0.85) 0%,
+    rgba(0, 0, 0, 0.5) 46%,
+    rgba(0, 0, 0, 0) 72%
+  );
+  filter: blur(calc(var(--size) * 0.032));
+  pointer-events: none;
+}
+
+/*
+ * Light source direction: Top-Right (45deg / 1:30 o'clock).
+ * In a conic-gradient(from 45deg at 50% 50%, ...):
+ *   - 0deg / 360deg = 1:30 (Top-Right apex, directly facing the light source)
+ *   - 45deg         = 3:00 (Right)
+ *   - 90deg         = 4:30 (Bottom-Right)
+ *   - 135deg        = 6:00 (Bottom)
+ *   - 180deg        = 7:30 (Bottom-Left apex, directly opposite the light source)
+ *   - 225deg        = 9:00 (Left)
+ *   - 270deg        = 10:30 (Top-Left)
+ *   - 315deg        = 12:00 (Top)
+ */
+
+/* 1. Outer metallic collar (100% -> 87.5%) — base gradient is unshadowed metal (Full depress state) */
+.body {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: conic-gradient(
+    from 45deg at 50% 50%,
+    #ffffff 0deg,
+    #efefef 16deg,
+    #bcbcbc 42deg,
+    #888888 90deg,
+    #5a5a5a 140deg,
+    #464646 180deg,
+    #5a5a5a 220deg,
+    #888888 270deg,
+    #bcbcbc 318deg,
+    #efefef 344deg,
+    #ffffff 360deg
+  );
+}
+
+/* Fine micro-anodized sheen on the outer collar */
+.body::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: 50%;
+  background-image: var(--grain-url);
+  background-size: 140px 140px;
+  mix-blend-mode: overlay;
+  opacity: 0.14;
+  pointer-events: none;
+}
+
+/*
+ * Light-facing inner lip of the collar.
+ * The raised cap blocks this lip at the top-right, so the specular band is faint when the
+ * button is fully open and grows as the plunger sinks and lays the lip bare.
+ */
+.sheen {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: 50%;
+  background: conic-gradient(
+    from 45deg at 50% 50%,
+    rgba(255, 255, 255, 0.92) 0deg,
+    rgba(255, 255, 255, 0.62) 14deg,
+    rgba(255, 255, 255, 0.26) 34deg,
+    rgba(255, 255, 255, 0) 58deg,
+    rgba(255, 255, 255, 0) 292deg,
+    rgba(255, 255, 255, 0.1) 326deg,
+    rgba(255, 255, 255, 0.26) 348deg,
+    rgba(255, 255, 255, 0.92) 360deg
+  );
+  mix-blend-mode: screen;
+  opacity: calc(0.26 + 0.74 * var(--press));
+  transition: opacity 0.22s cubic-bezier(0.22, 0.88, 0.32, 1);
+  pointer-events: none;
+}
+
+/*
+ * Full-width cast shadow across the bottom-left of the outer collar,
+ * formed by the raised button blocking the top-right light source.
+ * Scales smoothly with button depth (--shadow-depth: 1 -> 0.42 -> 0).
+ */
+.body::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: conic-gradient(
+    from 45deg at 50% 50%,
+    rgba(0, 0, 0, 0) 0deg,
+    rgba(0, 0, 0, 0) 65deg,
+    rgba(0, 0, 0, 0.28) 105deg,
+    rgba(0, 0, 0, 0.78) 142deg,
+    rgba(0, 0, 0, 0.99) 180deg,
+    rgba(0, 0, 0, 0.78) 218deg,
+    rgba(0, 0, 0, 0.28) 255deg,
+    rgba(0, 0, 0, 0) 295deg,
+    rgba(0, 0, 0, 0) 360deg
+  );
+  opacity: var(--shadow-depth);
+  transition: opacity 0.22s cubic-bezier(0.22, 0.88, 0.32, 1);
+  pointer-events: none;
+}
+
+/* 2. Cylindrical black bore channel (87.5% of total diameter) */
+.groove {
+  position: relative;
+  z-index: 2;
+  width: 87.5%;
+  height: 87.5%;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #101010;
+}
+
+/* 3. Plunger cap — outer 3.5% perimeter is the crisp 45° CNC-machined chamfer */
+.cap {
+  position: relative;
+  width: 98.2%;
+  height: 98.2%;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: conic-gradient(
+    from 45deg at 50% 50%,
+    #f6f6f6 0deg,
+    #e2e2e2 18deg,
+    #b6b6b6 45deg,
+    #858585 90deg,
+    #626262 138deg,
+    #525252 180deg,
+    #626262 222deg,
+    #858585 270deg,
+    #b6b6b6 315deg,
+    #e2e2e2 342deg,
+    #f6f6f6 360deg
+  );
+  transform: scale(1);
+  /* As the plunger sinks, the collar rim shades the cap's top-right edge and the whole disc cools down */
+  box-shadow:
+    inset calc(var(--press) * -6px) calc(var(--press) * 6px) calc(1px + var(--press) * 16px)
+      rgba(0, 0, 0, calc(var(--press) * 0.45));
+  filter: brightness(calc(1 - var(--press) * 0.075));
+  transition:
+    transform 0.22s cubic-bezier(0.22, 0.88, 0.32, 1.03),
+    box-shadow 0.22s ease,
+    filter 0.22s ease,
+    background 0.22s ease;
+  will-change: transform;
+  overflow: hidden;
+}
+
+/* Continuous bead-blasted anodized aluminum texture spanning both the chamfer and flat face */
+.cap::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  border-radius: 50%;
+  background-image: var(--grain-url);
+  background-size: 150px 150px;
+  mix-blend-mode: overlay;
+  opacity: 0.34;
+  pointer-events: none;
+}
+
+/* 4. Crisp flat bead-blasted aluminum top face inside the cap chamfer (93.0% of .cap) */
+.face {
+  position: relative;
+  z-index: 2;
+  width: 93%;
+  height: 93%;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: linear-gradient(
+    225deg,
+    #cecece 0%,
+    #c6c6c6 16%,
+    #b3b3b3 32%,
+    #9c9c9c 50%,
+    #898989 70%,
+    #7e7e7e 85%,
+    #797979 100%
+  );
+  box-shadow:
+    inset -0.75px 0.75px 0.75px rgba(255, 255, 255, 0.4),
+    -0.5px 0.5px 0.5px rgba(255, 255, 255, 0.22);
+}
+
+/* Soft localized glow aura behind the glyph when ON */
+.bloom {
+  position: absolute;
+  z-index: 4;
+  width: 68%;
+  height: 68%;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(255, 255, 255, 0.34) 0%,
+    rgba(255, 255, 255, 0.22) 38%,
+    rgba(255, 255, 255, 0.06) 58%,
+    rgba(255, 255, 255, 0) 74%
+  );
+  filter: blur(calc(var(--size) * 0.009));
+  opacity: 0;
+  transition: opacity 0.28s ease;
+  pointer-events: none;
+}
+
+/* ---------- power glyph ---------- */
+
+.glyph {
+  position: relative;
+  z-index: 4;
+  grid-area: 1 / 1;
+  width: calc(var(--size) * 0.67);
+  height: calc(var(--size) * 0.67);
+  display: block;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.glyph path {
+  fill: none;
+  stroke-linecap: round;
+}
+
+.glyph-crisp path {
+  stroke: #2b2b2b;
+  stroke-width: 3.6;
+  transition: stroke 0.24s ease, filter 0.26s ease;
+}
+
+.glyph-glow-mid,
+.glyph-glow-wide {
+  opacity: 0;
+  transition: opacity 0.28s ease;
+}
+
+.glyph-glow-mid path {
+  stroke: #ffffff;
+  stroke-width: 5.6;
+}
+
+.glyph-glow-wide path {
+  stroke: #ffffff;
+  stroke-width: 9.5;
+}
+
+.glyph-glow-mid {
+  filter: blur(calc(var(--size) * 0.006));
+}
+
+.glyph-glow-wide {
+  filter: blur(calc(var(--size) * 0.017));
+}
+
+/* ---------- 3 concentric physical states & depth-based outer ring shadow ---------- */
+
+/* State 1: Full open — maximum elevation, cap occludes the collar lip and casts a prominent bottom-left shadow */
+.power-btn[data-state="off"] {
+  --shadow-depth: 0.7;
+  --press: 0;
+}
+
+.power-btn[data-state="off"] .cap {
+  transform: scale(1);
+}
+
+/* State 3: On - semi depressed — mid elevation, lip starts catching light, moderate bottom-left shadow + glowing glyph */
+.power-btn[data-state="on"]:not(.is-pressing) {
+  --shadow-depth: 0.42;
+  --press: 0.55;
+}
+
+.power-btn[data-state="on"]:not(.is-pressing) .cap {
+  transform: scale(0.974);
+}
+
+/* State 2: Full depress — seated in the bore, lip fully lit at top-right, no cast shadow on the collar */
+.power-btn[data-state="depress"],
+.power-btn.is-pressing {
+  --shadow-depth: 0;
+  --press: 1;
+}
+
+.power-btn[data-state="depress"] .cap,
+.power-btn.is-pressing .cap {
+  transform: scale(0.946);
+}
+
+.power-btn[data-state="on"] .bloom {
+  opacity: 0.62;
+}
+
+.power-btn[data-state="on"] .glyph-glow-mid {
+  opacity: 0.6;
+}
+
+.power-btn[data-state="on"] .glyph-glow-wide {
+  opacity: 0.5;
+}
+
+.power-btn[data-state="on"] .glyph-crisp path {
+  stroke: #ffffff;
+  filter: drop-shadow(0 0 calc(var(--size) * 0.005) rgba(255, 255, 255, 0.9));
+}
+
+.power-btn.no-transition,
+.power-btn.no-transition *,
+.power-btn.no-transition *::before,
+.power-btn.no-transition *::after {
+  transition: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cap,
+  .body::after,
+  .bloom,
+  .glyph-crisp path,
+  .glyph-glow-mid,
+  .glyph-glow-wide {
+    transition-duration: 0.01ms !important;
+  }
+}
