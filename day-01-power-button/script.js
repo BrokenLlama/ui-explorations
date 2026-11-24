@@ -1,5 +1,18 @@
 const hero = document.getElementById("main");
 
+const params = new URLSearchParams(window.location.search);
+
+/* Embed mode: transparent page so the gallery cell shows through */
+if (params.has("embed")) {
+  document.documentElement.classList.add("embed");
+}
+
+/* Allow the host page to scale the component (e.g. ?size=200) */
+const sizeParam = parseFloat(params.get("size"));
+if (Number.isFinite(sizeParam) && sizeParam > 0) {
+  hero.style.setProperty("--size", `${sizeParam}px`);
+}
+
 /* Generate photographic, seamlessly-convolved micro-bead-blasted anodized aluminum grain */
 (function applySandblastedGrain() {
   const size = 256;
@@ -113,7 +126,7 @@ hero.addEventListener("keyup", (e) => {
 hero.addEventListener("blur", () => release(false));
 
 /* Optional initial state override via URL query (?state=off|depress|on) */
-const initialState = new URLSearchParams(window.location.search).get("state");
+const initialState = params.get("state");
 if (initialState === "on" || initialState === "depress") {
   hero.classList.add("no-transition");
   if (initialState === "on") isOn = true;

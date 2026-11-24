@@ -14,11 +14,19 @@ body {
   margin: 0;
 }
 
+html {
+  background: #0e1013;
+}
+
+/* When embedded in the gallery, let the host cell's surface show through */
+html.embed {
+  background: transparent;
+}
+
 body {
   display: grid;
   place-items: center;
-  background:
-    radial-gradient(120% 110% at 62% 8%, #33373e 0%, #22252a 34%, #15171a 68%, #0a0b0c 100%);
+  background: transparent;
   -webkit-font-smoothing: antialiased;
 }
 
