@@ -219,7 +219,7 @@
   </header>
 
   <main class="grid grid-12" id="grid">
-    <section class="cell" data-day="Day 01" data-name="Power Button">
+    <section class="cell" data-day="Day 01" data-name="Power Button" data-src="day-01-power-button/index.html" data-size="440">
       <div class="cell-head">
         <div class="cell-titles">
           <span class="day">Day 01</span>
@@ -240,12 +240,24 @@
       </div>
     </section>
 
-    <section class="cell cell--empty">
+    <section class="cell" data-day="Day 02" data-name="Slider" data-src="day-02-slider/index.html" data-size="560">
       <div class="cell-head">
         <div class="cell-titles">
           <span class="day">Day 02</span>
-          <span class="name">Upcoming</span>
+          <span class="name">Slider</span>
         </div>
+        <button class="expand" type="button" aria-label="Expand Slider">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M7 17 17 7" />
+            <path d="M9 7h8v8" />
+          </svg>
+        </button>
+      </div>
+      <div class="stage">
+        <iframe
+          src="day-02-slider/index.html?embed=1"
+          title="Day 02 — Slider"
+        ></iframe>
       </div>
     </section>
 
@@ -344,7 +356,7 @@
         viewerName.textContent = cell.dataset.name;
 
         const frame = document.createElement("iframe");
-        frame.src = "day-01-power-button/index.html?embed=1&size=440";
+        frame.src = `${cell.dataset.src}?embed=1&size=${cell.dataset.size || 440}`;
         frame.title = `${cell.dataset.day} — ${cell.dataset.name}`;
         viewerStage.replaceChildren(frame);
 

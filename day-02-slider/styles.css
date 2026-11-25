@@ -1,0 +1,129 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+}
+
+html {
+  background: #171717;
+}
+
+html.embed {
+  background: transparent;
+}
+
+body {
+  display: grid;
+  place-items: center;
+  background: transparent;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ---------- horizontal slider ---------- */
+
+.slider {
+  --size: clamp(280px, 68vw, 520px);
+  --track-h: calc(var(--size) * 0.027);
+  --knob-d: calc(var(--size) * 0.125);
+
+  position: relative;
+  display: grid;
+  place-items: center;
+  padding: calc(var(--knob-d) * 0.65);
+  outline: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: none;
+  cursor: pointer;
+}
+
+.slider:focus,
+.slider:focus-visible {
+  outline: none;
+}
+
+html.embed .slider {
+  --size: min(74vw, 310px);
+}
+
+/* Unfilled right track (solid black) */
+.track {
+  position: relative;
+  width: var(--size);
+  height: var(--track-h);
+  border-radius: 999px;
+  background: #000000;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.05);
+}
+
+/*
+ * Left track bar:
+ * At rest (t = 0): solid #8e8e8e gray.
+ * As the ring retreats into the bar (t: 0 -> 1): a white gradient wave flows
+ * from the knob (right end of .fill) leftward until the entire bar is solid #ffffff.
+ */
+.fill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 0;
+  border-radius: 999px 0 0 999px;
+  background: linear-gradient(
+    to left,
+    #ffffff 0%,
+    #ffffff var(--wave-core, 0%),
+    #8e8e8e var(--wave-tail, 0%),
+    #8e8e8e 100%
+  );
+  filter: drop-shadow(0 0 calc(var(--size) * 0.008 * var(--glow-bar, 0)) rgba(255, 255, 255, 0.45));
+  pointer-events: none;
+}
+
+/* Knob positioned along the track */
+.knob {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: var(--knob-d);
+  height: var(--knob-d);
+  transform: translate(-50%, -50%);
+  will-change: transform;
+  pointer-events: none;
+}
+
+.knob-svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+/* Dark gray ring revealed when the white light retreats into the bar */
+.ring-base {
+  fill: none;
+  stroke: #585858;
+  stroke-width: 23;
+}
+
+/* White light ring: splits at 3 o'clock and retreats symmetrically into 9 o'clock */
+.ring-light {
+  fill: none;
+  stroke: #ffffff;
+  stroke-width: 23;
+  stroke-linecap: round;
+  stroke-dasharray: 100 200;
+  stroke-dashoffset: 0;
+  filter: drop-shadow(0 0 calc(var(--size) * 0.007 * var(--glow-ring, 1)) rgba(255, 255, 255, 0.42));
+}
+
+/* Solid black inner circle */
+.ring-pit {
+  fill: #000000;
+}
