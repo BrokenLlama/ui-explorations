@@ -219,27 +219,6 @@
   </header>
 
   <main class="grid grid-12" id="grid">
-    <section class="cell" data-day="Day 01" data-name="Power Button" data-src="day-01-power-button/index.html" data-size="440">
-      <div class="cell-head">
-        <div class="cell-titles">
-          <span class="day">Day 01</span>
-          <span class="name">Power Button</span>
-        </div>
-        <button class="expand" type="button" aria-label="Expand Power Button">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <path d="M7 17 17 7" />
-            <path d="M9 7h8v8" />
-          </svg>
-        </button>
-      </div>
-      <div class="stage">
-        <iframe
-          src="day-01-power-button/index.html?embed=1"
-          title="Day 01 — Power Button"
-        ></iframe>
-      </div>
-    </section>
-
     <section class="cell" data-day="Day 02" data-name="Slider" data-src="day-02-slider/index.html" data-size="560">
       <div class="cell-head">
         <div class="cell-titles">
@@ -257,6 +236,27 @@
         <iframe
           src="day-02-slider/index.html?embed=1"
           title="Day 02 — Slider"
+        ></iframe>
+      </div>
+    </section>
+
+    <section class="cell" data-day="Day 01" data-name="Power Button" data-src="day-01-power-button/index.html" data-size="440">
+      <div class="cell-head">
+        <div class="cell-titles">
+          <span class="day">Day 01</span>
+          <span class="name">Power Button</span>
+        </div>
+        <button class="expand" type="button" aria-label="Expand Power Button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M7 17 17 7" />
+            <path d="M9 7h8v8" />
+          </svg>
+        </button>
+      </div>
+      <div class="stage">
+        <iframe
+          src="day-01-power-button/index.html?embed=1"
+          title="Day 01 — Power Button"
         ></iframe>
       </div>
     </section>
@@ -280,6 +280,28 @@
 
   <script>
     const grid = document.getElementById("grid");
+
+    /*
+     * Newest first: order the component cells by day number, descending,
+     * so new work always lands top-left regardless of where it sits in the markup.
+     */
+    (function orderNewestFirst() {
+      const cells = [...grid.children];
+      const dated = cells.filter((cell) => cell.dataset.name);
+      const rest = cells.filter((cell) => !cell.dataset.name);
+
+      const dayNumber = (cell) => {
+        const match = (cell.dataset.day || "").match(/\d+/);
+        return match ? Number(match[0]) : 0;
+      };
+
+      dated
+        .map((cell, index) => ({ cell, index }))
+        .sort((a, b) => dayNumber(b.cell) - dayNumber(a.cell) || a.index - b.index)
+        .forEach(({ cell }) => grid.appendChild(cell));
+
+      rest.forEach((cell) => grid.appendChild(cell));
+    })();
 
     /*
      * Complete the 12-column grid and fill the viewport height, so the page
