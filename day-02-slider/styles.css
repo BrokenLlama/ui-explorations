@@ -49,7 +49,7 @@ body {
 }
 
 html.embed .slider {
-  --size: min(74vw, 310px);
+  --size: min(70vw, 400px);
 }
 
 /* Unfilled right track (solid black) */

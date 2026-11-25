@@ -25,7 +25,7 @@ html.embed {
 
 /* ...and scale the component to the cell instead of a fixed pixel size */
 html.embed .power-btn {
-  --size: min(72vmin, 340px);
+  --size: min(70vmin, 400px);
 }
 
 body {
