@@ -223,6 +223,27 @@
   </header>
 
   <main class="grid grid-12" id="grid">
+    <section class="cell" data-day="Day 03" data-name="Segmented Buttons" data-src="day-03-segmented-buttons/index.html">
+      <div class="cell-head">
+        <div class="cell-titles">
+          <span class="day">Day 03</span>
+          <span class="name">Segmented Buttons</span>
+        </div>
+        <button class="expand" type="button" aria-label="Expand Segmented Buttons">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M7 17 17 7" />
+            <path d="M9 7h8v8" />
+          </svg>
+        </button>
+      </div>
+      <div class="stage">
+        <iframe
+          src="day-03-segmented-buttons/index.html?embed=1"
+          title="Day 03 — Segmented Buttons"
+        ></iframe>
+      </div>
+    </section>
+
     <section class="cell" data-day="Day 02" data-name="Slider" data-src="day-02-slider/index.html">
       <div class="cell-head">
         <div class="cell-titles">
@@ -265,7 +286,6 @@
       </div>
     </section>
 
-    <section class="cell cell--empty" aria-hidden="true"></section>
     <section class="cell cell--empty" aria-hidden="true"></section>
   </main>
 
@@ -373,6 +393,27 @@
     const viewerDay = document.getElementById("viewerDay");
     const viewerName = document.getElementById("viewerName");
 
+    /* Keep each embedded component's live state, and mirror changes made in the viewer back to the card */
+    const stateByWindow = new WeakMap();
+    let activeCardFrame = null;
+    let activeModalFrame = null;
+
+    window.addEventListener("message", (event) => {
+      const data = event.data;
+      if (!data || data.type !== "ui-state" || typeof data.params !== "string") return;
+
+      stateByWindow.set(event.source, data.params);
+
+      if (activeModalFrame && activeCardFrame && event.source === activeModalFrame.contentWindow) {
+        try {
+          activeCardFrame.contentWindow.postMessage(
+            { type: "ui-restore", params: data.params },
+            "*"
+          );
+        } catch (_) {}
+      }
+    });
+
     document.querySelectorAll(".cell[data-name]").forEach((cell) => {
       const button = cell.querySelector(".expand");
       if (!button) return;
@@ -381,9 +422,13 @@
         viewerDay.textContent = cell.dataset.day;
         viewerName.textContent = cell.dataset.name;
 
+        const source = cell.querySelector("iframe");
+        const query = source ? stateByWindow.get(source.contentWindow) : "";
         const frame = document.createElement("iframe");
-        frame.src = `${cell.dataset.src}?embed=1`;
+        frame.src = `${cell.dataset.src}?embed=1${query ? `&${query}` : ""}`;
         frame.title = `${cell.dataset.day} — ${cell.dataset.name}`;
+        activeCardFrame = source || null;
+        activeModalFrame = frame;
         viewerStage.replaceChildren(frame);
 
         viewer.showModal();
@@ -391,6 +436,8 @@
     });
 
     const closeViewer = () => {
+      activeCardFrame = null;
+      activeModalFrame = null;
       viewer.close();
       viewerStage.replaceChildren();
     };
@@ -401,7 +448,11 @@
       if (event.target === viewer) closeViewer();
     });
 
-    viewer.addEventListener("close", () => viewerStage.replaceChildren());
+    viewer.addEventListener("close", () => {
+      activeCardFrame = null;
+      activeModalFrame = null;
+      viewerStage.replaceChildren();
+    });
   </script>
 </body>
 </html>

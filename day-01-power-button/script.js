@@ -2,6 +2,22 @@ const hero = document.getElementById("main");
 
 const params = new URLSearchParams(window.location.search);
 
+function broadcastState(query) {
+  if (window.parent === window) return;
+  try {
+    window.parent.postMessage({ type: "ui-state", params: query }, "*");
+  } catch (_) {}
+}
+
+window.addEventListener("message", (event) => {
+  const data = event.data;
+  if (!data || data.type !== "ui-restore" || typeof data.params !== "string") return;
+  const q = new URLSearchParams(data.params);
+  isPressing = false;
+  isOn = q.get("state") === "on";
+  paint();
+});
+
 /* Embed mode: transparent page so the gallery cell shows through */
 if (params.has("embed")) {
   document.documentElement.classList.add("embed");
@@ -94,6 +110,7 @@ function paint() {
   hero.dataset.state = state;
   hero.classList.toggle("is-pressing", isPressing);
   hero.setAttribute("aria-checked", String(isOn));
+  broadcastState(`state=${isOn ? "on" : "off"}`);
 }
 
 function press() {
@@ -174,4 +191,6 @@ if (initialState === "on" || initialState === "depress") {
   requestAnimationFrame(() => {
     requestAnimationFrame(() => hero.classList.remove("no-transition"));
   });
+} else {
+  broadcastState("state=off");
 }

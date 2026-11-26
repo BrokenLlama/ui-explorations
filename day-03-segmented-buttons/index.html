@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Day 03 · Segmented Buttons</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div
+    class="segmented"
+    id="segmented"
+    role="tablist"
+    aria-label="Segmented tabs"
+  >
+    <div class="indicator" id="indicator" aria-hidden="true"></div>
+    <button class="tab" type="button" role="tab" aria-selected="false" data-index="0">
+      Day
+    </button>
+    <button class="tab is-active" type="button" role="tab" aria-selected="true" data-index="1">
+      Date
+    </button>
+    <button class="tab" type="button" role="tab" aria-selected="false" data-index="2">
+      Month
+    </button>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

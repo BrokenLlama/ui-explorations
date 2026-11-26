@@ -6,6 +6,26 @@ const ringTop = document.getElementById("ringTop");
 const ringBot = document.getElementById("ringBot");
 
 const params = new URLSearchParams(window.location.search);
+
+function broadcastState(query) {
+  if (window.parent === window) return;
+  try {
+    window.parent.postMessage({ type: "ui-state", params: query }, "*");
+  } catch (_) {}
+}
+
+window.addEventListener("message", (event) => {
+  const data = event.data;
+  if (!data || data.type !== "ui-restore" || typeof data.params !== "string") return;
+  const q = new URLSearchParams(data.params);
+  const next = parseFloat(q.get("pos"));
+  if (!Number.isFinite(next)) return;
+  pos = Math.min(1, Math.max(0, next));
+  targetPos = pos;
+  renderPosition();
+  broadcastState(`pos=${pos.toFixed(3)}`);
+});
+
 /* Bar -> Ring is the main behaviour; ?variant=forward keeps the original Ring -> Bar */
 const isReverse = params.get("variant") !== "forward";
 
@@ -231,6 +251,7 @@ function releasePointer() {
     phase = "releasing";
   }
   ensureLoop();
+  broadcastState(`pos=${pos.toFixed(3)}`);
 }
 
 widget.addEventListener("pointerup", releasePointer);
@@ -253,6 +274,7 @@ widget.addEventListener("keydown", (e) => {
   e.preventDefault();
   targetPos = Math.min(1, Math.max(0, next));
   ensureLoop();
+  broadcastState(`pos=${targetPos.toFixed(3)}`);
 });
 
 /* ---------- initial layout & optional storyboard frame preview (?t=0..1&pos=0..1) ---------- */
@@ -275,4 +297,5 @@ if (Number.isFinite(tParam)) {
 }
 
 renderPosition();
+broadcastState(`pos=${pos.toFixed(3)}`);
 window.addEventListener("resize", renderPosition);
