@@ -52,6 +52,14 @@ body {
   transition: transform 180ms cubic-bezier(0.22, 0.9, 0.28, 1), filter 180ms ease;
 }
 
+/* Inked: drop the top-inner highlight (it shows as a light fringe around the
+   flood) but keep the drop shadow. The box-shadow eases in after the flood. */
+.dl-btn.inked {
+  box-shadow: 0 12px 30px -14px rgba(0, 0, 0, 0.6);
+  transition: transform 180ms cubic-bezier(0.22, 0.9, 0.28, 1), filter 180ms ease,
+    box-shadow 200ms ease 60ms;
+}
+
 html.embed .dl-btn {
   --fs: clamp(14px, 5.4vw, 30px);
 }
@@ -185,6 +193,9 @@ html.embed .dl-btn {
   inset: 0;
   border-radius: inherit;
   background: #101012;
+  /* Seal the flood's rounded edge 1px outward so no AA fringe shows where it
+     meets the pill edge; invisible on the dark page. */
+  box-shadow: 0 0 0 1px #101012;
   transform: scale(0);
   transform-origin: 0 0;
   will-change: transform;
