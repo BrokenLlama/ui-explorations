@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Day 04 · Download Button</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <button class="dl-btn" id="dl" type="button" aria-label="Download now" aria-pressed="false">
+    <span class="dl-eyes" aria-hidden="true">
+      <span class="pupil pupil-left"></span>
+      <span class="pupil pupil-right"></span>
+      <svg class="progress" viewBox="0 0 48 48" aria-hidden="true" focusable="false">
+        <circle class="progress-track" cx="24" cy="24" r="19" />
+        <circle class="progress-fill" cx="24" cy="24" r="19" />
+      </svg>
+    </span>
+    <span class="dl-label"><span class="lab lab-idle on">Download now</span><span class="lab lab-busy">Downloading…</span></span><span class="lab lab-done"><svg class="done-check" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 13l4 4L19 7" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Download complete</span>
+  </button>
+
+  <script src="script.js"></script>
+</body>
+</html>
